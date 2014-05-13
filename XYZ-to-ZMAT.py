@@ -10,15 +10,15 @@ import sys
 import getopt
 
 ### --- Arguments --- ###
-program = "TS-Map.py"
+program = "XYZ-to-ZMAT.py"
 ifile = ''
 ofile = ''
 
 ### Read command line args
 try:
-	myopts, args = getopt.getopt(sys.argv[1:],"i:o:1:2:3:4:h")
+	myopts, args = getopt.getopt(sys.argv[1:],"i:o:h")
 except getopt.GetoptError:
-	print program + " -i <inputfile.map> -o <outputfile.map>"
+	print program + " -i <inputfile.xyz> -o <outputfile.zmat>"
 	sys.exit(2)
 ###############################
 # o == option
@@ -30,14 +30,11 @@ for o, a in myopts:
 	elif o == '-o':
 		ofile = a
 	elif o == '-h':
-		print program + " -i <inputfile.map> -o <outputfile.map>"
+		print program + " -i <inputfile.xyz> -o <outputfile.zmat>"
 		sys.exit(0)
 	else:
-		print("Usage: %s -i inputfile.map" % sys.argv[0])
+		print("Usage: %s -i <inputfile.xyz> -o <outputfile.zmat>" % sys.argv[0])
 		sys.exit(0)
- 
-### Display input and output file name passed as the args
-#print ("Input file : %s and output file: %s" % (ifile,ofile) )
 
 ### --- Distance function --- ###
 def getdistance(at1, at2, lol):
@@ -315,15 +312,6 @@ for i in range(0,int(iFileAtomNum)):
 	line = '\t'.join(str(e) for e in linetemp) #, e != -1)
 	f.write(line)
 f.close()
-#C          0.00000        0.00000        0.00000
-#H          1.08670        0.00000        0.00000
-#C         -0.71029        0.00000       -1.19865
-#H         -0.19020       -0.00293       -2.15258
-#C         -2.10196       -0.00212       -1.16391
-#H         -2.63733       -0.01709       -2.10590
-#C         -2.81964        0.00447        0.04813
-#P         -4.67023        0.01714        0.00672
-#Pd        -5.54865       -0.12889        2.17206
 
 ### --- Print out the xyz from the zmatrix --- ###
 xyzLOL = []
