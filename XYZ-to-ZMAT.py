@@ -317,7 +317,7 @@ for i in range(0,int(iFileAtomNum)):
 f.close()
 
 ### --- Print out the xyz from the zmatrix --- ###
-if printfile = 1:
+if printfile == 1:
 	xyzLOL = []
 	print iFileAtomNum
 	#print ""
