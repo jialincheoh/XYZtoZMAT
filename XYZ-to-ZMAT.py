@@ -13,10 +13,11 @@ import getopt
 program = "XYZ-to-ZMAT.py"
 ifile = ''
 ofile = ''
+printfile = 0
 
 ### Read command line args
 try:
-	myopts, args = getopt.getopt(sys.argv[1:],"i:o:h")
+	myopts, args = getopt.getopt(sys.argv[1:],"i:o:ph")
 except getopt.GetoptError:
 	print program + " -i <inputfile.xyz> -o <outputfile.zmat>"
 	sys.exit(2)
@@ -29,6 +30,8 @@ for o, a in myopts:
 		ifile = a
 	elif o == '-o':
 		ofile = a
+	elif o == '-p':
+		printfile=1
 	elif o == '-h':
 		print program + " -i <inputfile.xyz> -o <outputfile.zmat>"
 		sys.exit(0)
@@ -314,13 +317,14 @@ for i in range(0,int(iFileAtomNum)):
 f.close()
 
 ### --- Print out the xyz from the zmatrix --- ###
-xyzLOL = []
-print iFileAtomNum
-#print ""
-for i in range(0,int(iFileAtomNum)):
-	linetemp = getXYZfromZMAT(zmatlol[i],i)
-	xyzLOL.append(linetemp)
-	print '   '.join(str(e) for e in linetemp)
+if printfile = 1:
+	xyzLOL = []
+	print iFileAtomNum
+	#print ""
+	for i in range(0,int(iFileAtomNum)):
+		linetemp = getXYZfromZMAT(zmatlol[i],i)
+		xyzLOL.append(linetemp)
+		print '   '.join(str(e) for e in linetemp)
 
 
 ######################################################################
