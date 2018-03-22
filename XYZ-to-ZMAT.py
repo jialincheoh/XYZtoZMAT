@@ -10,17 +10,22 @@ import sys
 import getopt
 
 ### --- Arguments --- ###
-program = "XYZ-to-ZMAT.py"
 ifile = ''
 ofile = ''
 printfile = 0
+
+
+def print_help():
+	print("Usage: %s -i <inputfile.xyz> -o <outputfile.zmat>" % sys.argv[0])
+		
 
 ### Read command line args
 try:
 	myopts, args = getopt.getopt(sys.argv[1:],"i:o:ph")
 except getopt.GetoptError:
-	print program + " -i <inputfile.xyz> -o <outputfile.zmat>"
+	print_help()
 	sys.exit(2)
+
 ###############################
 # o == option
 # a == argument passed to the o
@@ -33,11 +38,20 @@ for o, a in myopts:
 	elif o == '-p':
 		printfile=1
 	elif o == '-h':
-		print program + " -i <inputfile.xyz> -o <outputfile.zmat>"
+		print_help()
 		sys.exit(0)
 	else:
-		print("Usage: %s -i <inputfile.xyz> -o <outputfile.zmat>" % sys.argv[0])
+		print_help()
 		sys.exit(0)
+
+if not ifile:
+	print_help()
+	sys.exit(3)
+
+if not ifile:
+	print_help()
+	sys.exit(4)
+
 
 ### --- Distance function --- ###
 def getdistance(at1, at2, lol):
@@ -98,9 +112,11 @@ def getdihedral(at1, at2, at3, at4, lol):
 elementList = ["h","he","li","be","b","c","n","o","f","ne","na","mg","al","si","p","s","cl","ar","k","ca","sc","ti","v","cr","mn","fe","co","ni","cu","zn","ga","ge","as","se","br","kr","rb","sr","y","zr","nb","mo","tc","ru","rh","pd","ag","cd","in","sn","sb","te","i","xe","cs","ba","la","ce","pr","nd","pm","sm","eu","gd","tb","dy","ho","er","tm","yb","lu","hf","ta","w","re","os","ir","pt","au","hg","tl","pb","bi","po","at","rn","fr","ra","ac","th","pa","u","np","pu","am","cm","bk","cf","es","fm","md","no","lr","rf","db","sg","bh","hs","mt","ds","rg","cn","uut","fl","uup","lv","uus","uuo"]
 elementNames = ["H","He","Li","Be","B","C","N","O","F","Ne","Na","Mg","Al","Si","P","S","Cl","Ar","K","Ca","Sc","Ti","V","Cr","Mn","Fe","Co","Ni","Cu","Zn","Ga","Ge","As","Se","Br","Kr","Rb","Sr","Y","Zr","Nb","Mo","Tc","Ru","Rh","Pd","Ag","Cd","In","Sn","Sb","Te","I","Xe","Cs","Ba","La","Ce","Pr","Nd","Pm","Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu","Hf","Ta","W","Re","Os","Ir","Pt","Au","Hg","Tl","Pb","Bi","Po","At","Rn","Fr","Ra","Ac","Th","Pa","U","Np","Pu","Am","Cm","Bk","Cf","Es","Fm","Md","No","Lr","Rf","Db","Sg","Bh","Hs","Mt","Ds","Rg","Cn","Uut","Fl","Uup","Lv","Uus","Uuo"]
 elementLarge =  ["na","mg","al","si","p","s","cl","ar","k","ca","sc","ti","v","cr","mn","fe","co","ni","cu","zn","ga","ge","as","se","br","kr","rb","sr","y","zr","nb","mo","tc","ru","rh","pd","ag","cd","in","sn","sb","te","i","xe","cs","ba","la","ce","pr","nd","pm","sm","eu","gd","tb","dy","ho","er","tm","yb","lu","hf","ta","w","re","os","ir","pt","au","hg","tl","pb","bi","po","at","rn","fr","ra","ac","th","pa","u","np","pu","am","cm","bk","cf","es","fm","md","no","lr","rf","db","sg","bh","hs","mt","ds","rg","cn","uut","fl","uup","lv","uus","uuo"]
+
 def getElementNum(at1):
 	element = elementList.index(at1.lower())
 	return element+1
+
 def getElementName(at1):
 	element = elementNames[at1-1]
 	return element
@@ -117,67 +133,30 @@ f.close()
 ################################
 ifileLength = 0
 ifilelol = []
-a_list = []
 #### --- Input/parse the input file into a list of lists called ifilelol --- ###
 for i, var in enumerate(ifileList):
 	line = var.split()
-	#print line
-	if i == 0:
-		a_list.append(var)
-		ifilelol.append(list(a_list))
-		a_list[:] =[]
-	if i == 1:
-		a_list.append(var.rstrip('\n'))
-		ifilelol.append(list(a_list))
-		a_list[:] =[]
-	if i >= 2:
-		a_list.append(getElementNum(line[0]))
-		a_list.append(Decimal(line[1]))
-		a_list.append(Decimal(line[2]))
-		a_list.append(Decimal(line[3]))
-		ifilelol.append(list(a_list))
-		a_list[:] =[]
+	a_list = []
+	try:
+		element = getElementNum(line[0])
+	except ValueError as e:
+		continue
+	a_list.append(element)
+	a_list.append(Decimal(line[1]))
+	a_list.append(Decimal(line[2]))
+	a_list.append(Decimal(line[3]))
+	ifilelol.append(list(a_list))
 	ifileLength = ifileLength + 1
 
 ### --- Get bonds --- ###
-iFileAtomNum = ' '.join(ifilelol[0])
-iFileName = ' '.join(ifilelol[1])
+#print(ifilelol[0], type(ifilelol[0]))
+#iFileAtomNum = ' '.join(ifilelol[0])
+#iFileName = ' '.join(ifilelol[1])
 covBonds = []
 covHBonds = []
 covTMBonds = []
 nearestNeighbor = []
 neighborStart = [0, 1000000]
-#### --- Generate bond lists --- ###
-#for i in range(0,int(iFileAtomNum)):
-#	nearestNeighbor.append(list(neighborStart))
-#	for j in range(0,int(iFileAtomNum)):
-#		if i !=j:
-#			distij = getdistance(i+2, j+2)
-#			if j > i:
-#				if distij <= 2.25 and ifilelol[i+2][0] != 1 and ifilelol[j+2][0] != 1 and ((getElementName(ifilelol[i+2][0]).lower() not in elementLarge) and (getElementName(ifilelol[j+2][0]).lower() not in elementLarge)):
-#					distList = [i+1, j+1, distij]
-#					covBonds.append(distList)
-#					#print str(i+2) + "\t" + str(j+2) + "\t" + str(distij)
-#				elif distij <= 1.3 and (ifilelol[i+2][0] == 1 or ifilelol[j+2][0] == 1):
-#					distList = [i+1, j+1, distij]
-#					covHBonds.append(distList)
-#				elif distij <= 3 and ((getElementName(ifilelol[i+2][0]).lower() in elementLarge) and (getElementName(ifilelol[j+2][0]).lower() in elementLarge)):
-#					distList = [i+1, j+1, distij]
-#					covTMBonds.append(distList)
-#			if distij < nearestNeighbor[i][1]:
-#				nearestNeighbor[i][0] = j + 1
-#				nearestNeighbor[i][1] = distij
-#### --- Remove hydrogen bonds from bond list --- ###
-#for i in range(0,len(covHBonds)):
-#	if (covHBonds[i][0] != nearestNeighbor[covHBonds[i][0]][0]) and (covHBonds[i][1] != nearestNeighbor[covHBonds[i][0]][0]):
-#		del covHBonds[i]	
-##print "Covalent bonds to Hydrogen:"
-##print covHBonds
-##print "Covalent bonds between \"heavy\" atoms."
-##print covBonds
-##print "Covalent bonds between TM atoms."
-##print covTMBonds
-##print nearestNeighbor
 
 ### --- get the distance, angle and dihedrals for a Z-matrix --- ###
 def getzmat(i):
@@ -301,16 +280,16 @@ def getXYZfromZMAT(lol,at4):
 
 ### --- Generate a list of lists for the zmatrix of the structure --- ###
 zmatlol = []
-for i in range(0,int(iFileAtomNum)):
+for i in range(len(ifilelol) - 2):
 	linetemp = getzmat(i)
 	zmatlol.append(linetemp)
 	#a_list[:] =[]
 
 ### --- Output file in Z-matrix format --- ###
 f = open(ofile, 'w+')
-f.write(str(iFileAtomNum))
-f.write(str(iFileName) + "\n")
-for i in range(0,int(iFileAtomNum)):
+#f.write(str(iFileAtomNum))
+#f.write(str(iFileName) + "\n")
+for i in range(0, len(zmatlol)):
 	linetemp = [x for x in zmatlol[i] if x != -1]
 	line = '\t'.join(str(e) for e in linetemp) #, e != -1)
 	f.write(line)
