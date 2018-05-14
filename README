@@ -1,0 +1,8 @@
+cd /Users/jialincheoh/Documents/isomers
+
+python isomers.py ../XYZtoZMAT/test2.inp ../XYZtoZMAT/fmo_3eni_2.20_lys_061_test.output
+
+python structural_isomers.py ../XYZtoZMAT/test2.inp ../XYZtoZMAT/fmo_3eni_2.20_lys_061_test.output
+
+
+

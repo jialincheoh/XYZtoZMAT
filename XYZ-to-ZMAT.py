@@ -25,7 +25,7 @@ try:
 except getopt.GetoptError:
 	print_help()
 	sys.exit(2)
-
+	
 ###############################
 # o == option
 # a == argument passed to the o
@@ -48,7 +48,7 @@ if not ifile:
 	print_help()
 	sys.exit(3)
 
-if not ifile:
+if not ofile:
 	print_help()
 	sys.exit(4)
 
@@ -135,11 +135,12 @@ ifileLength = 0
 ifilelol = []
 #### --- Input/parse the input file into a list of lists called ifilelol --- ###
 for i, var in enumerate(ifileList):
-	line = var.split()
+	line = var.strip().split()
 	a_list = []
 	try:
 		element = getElementNum(line[0])
-	except ValueError as e:
+	except (IndexError, ValueError) as e:
+		print(e)
 		continue
 	a_list.append(element)
 	a_list.append(Decimal(line[1]))
@@ -148,6 +149,7 @@ for i, var in enumerate(ifileList):
 	ifilelol.append(list(a_list))
 	ifileLength = ifileLength + 1
 
+print(len(ifilelol))
 ### --- Get bonds --- ###
 #print(ifilelol[0], type(ifilelol[0]))
 #iFileAtomNum = ' '.join(ifilelol[0])
